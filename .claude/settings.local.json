@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(rm -rf node_modules package-lock.json)",
+      "Bash(export NODE_OPTIONS=--use-system-ca)",
+      "Bash(npm config *)",
+      "Bash(export ELECTRON_MIRROR=\"https://npmmirror.com/mirrors/electron/\")",
+      "Bash(npx cap *)"
+    ]
+  }
+}

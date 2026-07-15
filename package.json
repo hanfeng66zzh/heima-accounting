@@ -1,0 +1,44 @@
+{
+  "name": "heima-accounting",
+  "version": "1.0.0",
+  "description": "黑马记账 - 个人记账桌面应用",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "bash -c 'unset ELECTRON_RUN_AS_NODE && npx electron-vite dev'",
+    "build": "bash -c 'unset ELECTRON_RUN_AS_NODE && npx electron-vite build'",
+    "preview": "bash -c 'unset ELECTRON_RUN_AS_NODE && npx electron-vite preview'",
+    "pack": "bash -c 'unset ELECTRON_RUN_AS_NODE && npx electron-builder --dir'",
+    "dist": "bash -c 'unset ELECTRON_RUN_AS_NODE && npx electron-vite build && npx electron-builder'",
+    "mobile:build": "npx vite build --config vite.mobile.config.ts",
+    "mobile:sync": "npx cap sync",
+    "mobile:add:android": "npx cap add android",
+    "mobile:add:ios": "npx cap add ios",
+    "mobile:open:android": "npx cap open android",
+    "mobile:open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.3.0",
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "antd": "^5.15.0",
+    "dayjs": "^1.11.10",
+    "echarts": "^5.5.0",
+    "echarts-for-react": "^3.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "sql.js": "^1.10.0",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "electron": "^29.0.0",
+    "electron-builder": "^24.13.0",
+    "electron-vite": "^2.0.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.0"
+  }
+}
