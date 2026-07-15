@@ -13,3 +13,20 @@ Thumbs.db
 # 环境变量
 .env
 .env.local
+
+# Android 编译产物
+android/app/build/
+android/.gradle/
+android/build/
+android/captures/
+*.apk
+*.aab
+*.jks
+
+# IDE 文件
+.idea/
+*.iml
+.vscode/
+
+# 便携版 Exe
+dist/黑马记账/
