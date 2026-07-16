@@ -4,6 +4,7 @@ import AddRecord from './pages/AddRecord'
 import RecordList from './pages/RecordList'
 import Statistics from './pages/Statistics'
 import Settings from './pages/Settings'
+import ErrorBoundary from './components/ErrorBoundary'
 import { useStore } from './store/useStore'
 
 type TabKey = 'add' | 'list' | 'stats' | 'settings'
@@ -28,11 +29,11 @@ const App: React.FC = () => {
 
   const renderPage = () => {
     switch (activeTab) {
-      case 'add': return <AddRecord />
-      case 'list': return <RecordList />
-      case 'stats': return <Statistics />
-      case 'settings': return <Settings />
-      default: return <AddRecord />
+      case 'add': return <ErrorBoundary pageName="记账"><AddRecord /></ErrorBoundary>
+      case 'list': return <ErrorBoundary pageName="账单"><RecordList /></ErrorBoundary>
+      case 'stats': return <ErrorBoundary pageName="统计"><Statistics /></ErrorBoundary>
+      case 'settings': return <ErrorBoundary pageName="设置"><Settings /></ErrorBoundary>
+      default: return <ErrorBoundary pageName="记账"><AddRecord /></ErrorBoundary>
     }
   }
 

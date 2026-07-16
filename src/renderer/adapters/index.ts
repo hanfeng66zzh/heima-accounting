@@ -10,11 +10,16 @@ let _adapter: DbAdapter | null = null
 export function getDbAdapter(): DbAdapter {
   if (_adapter) return _adapter
 
-  // 如果 window.electronAPI 存在 → Electron 桌面环境
-  if (typeof window !== 'undefined' && window.electronAPI) {
-    _adapter = createElectronAdapter()
-  } else {
-    // 否则使用 Web 适配器（浏览器 / Capacitor 手机环境）
+  try {
+    // 如果 window.electronAPI 存在 → Electron 桌面环境
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      _adapter = createElectronAdapter()
+    } else {
+      // 否则使用 Web 适配器（浏览器 / Capacitor 手机环境）
+      _adapter = createWebAdapter()
+    }
+  } catch (err) {
+    console.error('[DbAdapter] 创建适配器失败，降级为 Web 适配器:', err)
     _adapter = createWebAdapter()
   }
 

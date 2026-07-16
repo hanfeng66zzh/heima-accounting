@@ -12,7 +12,22 @@ const STORAGE_KEY = 'heima_accounting_db'
 function loadRecords(): ExpenseRecord[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (!raw) return []
+    const records: ExpenseRecord[] = JSON.parse(raw)
+    // 防御性修复：把字符串类型的 amount 修正为数字
+    // 修复旧版本 InputNumber stringMode 导致的数据错误
+    let fixed = false
+    for (const r of records) {
+      if (typeof r.amount === 'string') {
+        r.amount = Number(r.amount)
+        fixed = true
+      }
+    }
+    if (fixed) {
+      // 修正后写回 localStorage
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)) } catch { /* 静默 */ }
+    }
+    return records
   } catch {
     return []
   }
@@ -41,7 +56,7 @@ export function createWebAdapter(): DbAdapter {
       const newRecord: ExpenseRecord = {
         id: nextId++,
         type: record.type,
-        amount: record.amount,
+        amount: Number(record.amount),
         categoryId: record.categoryId,
         subCategoryName: record.subCategoryName,
         date: record.date,
@@ -105,13 +120,13 @@ export function createWebAdapter(): DbAdapter {
       const expenseRecords = monthRecords.filter(r => r.type !== 'income')
       const incomeRecords = monthRecords.filter(r => r.type === 'income')
 
-      const totalExpense = expenseRecords.reduce((sum, r) => sum + r.amount, 0)
-      const totalIncome = incomeRecords.reduce((sum, r) => sum + r.amount, 0)
+      const totalExpense = expenseRecords.reduce((sum, r) => sum + Number(r.amount), 0)
+      const totalIncome = incomeRecords.reduce((sum, r) => sum + Number(r.amount), 0)
 
       // 支出分类汇总
       const catMap = new Map<string, number>()
       expenseRecords.forEach(r => {
-        catMap.set(r.categoryId, (catMap.get(r.categoryId) || 0) + r.amount)
+        catMap.set(r.categoryId, (catMap.get(r.categoryId) || 0) + Number(r.amount))
       })
       const categoryBreakdown = Array.from(catMap.entries())
         .map(([categoryId, total]) => ({ categoryId, total }))
@@ -120,7 +135,7 @@ export function createWebAdapter(): DbAdapter {
       // 每日支出汇总
       const dailyExpMap = new Map<string, number>()
       expenseRecords.forEach(r => {
-        dailyExpMap.set(r.date, (dailyExpMap.get(r.date) || 0) + r.amount)
+        dailyExpMap.set(r.date, (dailyExpMap.get(r.date) || 0) + Number(r.amount))
       })
       const dailyExpenses = Array.from(dailyExpMap.entries())
         .map(([date, total]) => ({ date, total }))
@@ -129,7 +144,7 @@ export function createWebAdapter(): DbAdapter {
       // 每日收入汇总
       const dailyIncMap = new Map<string, number>()
       incomeRecords.forEach(r => {
-        dailyIncMap.set(r.date, (dailyIncMap.get(r.date) || 0) + r.amount)
+        dailyIncMap.set(r.date, (dailyIncMap.get(r.date) || 0) + Number(r.amount))
       })
       const dailyIncomes = Array.from(dailyIncMap.entries())
         .map(([date, total]) => ({ date, total }))

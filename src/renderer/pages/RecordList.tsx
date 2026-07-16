@@ -196,7 +196,7 @@ const RecordList: React.FC = () => {
                         fontWeight: 600,
                         color: isIncome ? '#52c41a' : '#ff4d4f'
                       }}>
-                        {isIncome ? '+' : '-'}¥{record.amount.toFixed(2)}
+                        {isIncome ? '+' : '-'}¥{Number(record.amount).toFixed(2)}
                       </div>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 4 }}>
                         <EditOutlined

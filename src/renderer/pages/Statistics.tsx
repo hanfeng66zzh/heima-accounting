@@ -12,6 +12,20 @@ import { getDbAdapter } from '../adapters'
 // 按需注册 ECharts 组件
 echarts.use([PieChart, BarChart, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer])
 
+// ECharts 渲染错误边界：图表渲染失败时显示降级提示，不影响整个页面
+class EChartsErrorWrapper extends React.Component<{
+  children: React.ReactNode
+  onError: () => void
+}> {
+  componentDidCatch(error: Error) {
+    console.error('[ECharts] 图表渲染失败:', error)
+    this.props.onError()
+  }
+  render() {
+    return this.props.children
+  }
+}
+
 const Statistics: React.FC = () => {
   const { categories, incomeCategories } = useStore()
   const allCategories = [...categories, ...incomeCategories]
@@ -30,6 +44,7 @@ const Statistics: React.FC = () => {
     dailyIncomes: { date: string; total: number }[]
   } | null>(null)
   const [availableYears, setAvailableYears] = useState<number[]>([currentYear])
+  const [chartError, setChartError] = useState(false)
 
   useEffect(() => {
     loadYears()
@@ -40,9 +55,13 @@ const Statistics: React.FC = () => {
   }, [selectedYear, selectedMonth])
 
   const loadYears = async () => {
-    const years = await getDbAdapter().getAllYears()
-    if (years.length > 0) {
-      setAvailableYears(years)
+    try {
+      const years = await getDbAdapter().getAllYears()
+      if (years.length > 0) {
+        setAvailableYears(years)
+      }
+    } catch (err) {
+      console.error('加载年份失败:', err)
     }
   }
 
@@ -189,13 +208,13 @@ const Statistics: React.FC = () => {
             <div className="stat-card" style={{ flex: 1, textAlign: 'center' }}>
               <div className="stat-label">总支出</div>
               <div className="stat-value expense">
-                ¥{stats!.totalExpense.toFixed(2)}
+                ¥{Number(stats!.totalExpense).toFixed(2)}
               </div>
             </div>
             <div className="stat-card" style={{ flex: 1, textAlign: 'center' }}>
               <div className="stat-label">总收入</div>
               <div style={{ fontSize: 28, fontWeight: 700, color: '#52c41a' }}>
-                ¥{stats!.totalIncome.toFixed(2)}
+                ¥{Number(stats!.totalIncome).toFixed(2)}
               </div>
             </div>
           </div>
@@ -208,39 +227,50 @@ const Statistics: React.FC = () => {
             <div style={{
               fontSize: 28,
               fontWeight: 700,
-              color: (stats!.totalIncome - stats!.totalExpense) >= 0 ? '#52c41a' : '#ff4d4f'
+              color: (Number(stats!.totalIncome) - Number(stats!.totalExpense)) >= 0 ? '#52c41a' : '#ff4d4f'
             }}>
-              ¥{(stats!.totalIncome - stats!.totalExpense).toFixed(2)}
+              ¥{(Number(stats!.totalIncome) - Number(stats!.totalExpense)).toFixed(2)}
             </div>
           </div>
 
           {/* 支出分类饼图 */}
-          {pieOption && (
+          {!chartError && pieOption && (
             <div className="stat-card">
               <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: '#333' }}>
                 支出分类占比
               </div>
-              <ReactEChartsCore
-                echarts={echarts}
-                option={pieOption}
-                style={{ height: 260 }}
-                notMerge
-              />
+              <EChartsErrorWrapper onError={() => setChartError(true)}>
+                <ReactEChartsCore
+                  echarts={echarts}
+                  option={pieOption}
+                  style={{ height: 260 }}
+                  notMerge
+                />
+              </EChartsErrorWrapper>
             </div>
           )}
 
           {/* 每日收支对比图 */}
-          {barOption && (
+          {!chartError && barOption && (
             <div className="stat-card">
               <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 8, color: '#333' }}>
                 每日收支对比
               </div>
-              <ReactEChartsCore
-                echarts={echarts}
-                option={barOption}
-                style={{ height: 240 }}
-                notMerge
-              />
+              <EChartsErrorWrapper onError={() => setChartError(true)}>
+                <ReactEChartsCore
+                  echarts={echarts}
+                  option={barOption}
+                  style={{ height: 240 }}
+                  notMerge
+                />
+              </EChartsErrorWrapper>
+            </div>
+          )}
+
+          {chartError && (
+            <div className="stat-card" style={{ textAlign: 'center', padding: 24 }}>
+              <span style={{ fontSize: 36 }}>📊</span>
+              <div style={{ fontSize: 14, color: '#999', marginTop: 8 }}>图表加载失败，请刷新重试</div>
             </div>
           )}
         </>

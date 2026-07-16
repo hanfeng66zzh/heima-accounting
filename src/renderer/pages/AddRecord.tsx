@@ -52,7 +52,7 @@ const AddRecord: React.FC = () => {
 
     const record = {
       type: transactionType,
-      amount,
+      amount: Number(amount),
       categoryId: selectedCategoryId,
       subCategoryName: selectedSubCategory,
       date: date.format('YYYY-MM-DD'),
@@ -177,7 +177,6 @@ const AddRecord: React.FC = () => {
           max={9999999}
           size="large"
           variant="borderless"
-          stringMode
           autoFocus
         />
       </div>
