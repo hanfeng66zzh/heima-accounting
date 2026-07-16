@@ -221,7 +221,6 @@ export JAVA_HOME="/e/Android Studio/jbr"   # macOS/Linux
 - [x] **P2** — 数据导入 CSV
 - [ ] **P2** — 分类管理（自定义增删分类）
 - [ ] **P2** — 月度预算设置与超支提醒
-- [ ] **P3** — iOS 手机版适配
 
 ---
 
