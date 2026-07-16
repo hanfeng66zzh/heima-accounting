@@ -89,27 +89,6 @@ npm run mobile:open:ios
 
 注意：打包安装器需要在 electron-builder.yml 中配置签名与目标平台相关设置。
 
-## 截图（示例）
-下面是占位截图，建议你替换为真实截图：
-
-- 主界面（记账页）
-
-![主界面 - 记账页](https://via.placeholder.com/900x520.png?text=%E4%B8%BB%E7%95%8C%E9%A1%B5+%E8%AE%B0%E8%B4%A6)
-
-- 账单列表
-
-![账单列表](https://via.placeholder.com/900x520.png?text=%E8%B4%A6%E5%8D%95%E5%88%97%E8%A1%A8)
-
-- 统计页面（图表）
-
-![统计页面](https://via.placeholder.com/900x520.png?text=%E7%BB%9F%E8%AE%A1%E9%A1%B5)
-
-如何替换为真实截图：
-1. 在仓库中创建目录 `assets/screenshots/` 并上传图片，例如 `assets/screenshots/main.png`。
-2. 将上面图片链接替换为相对路径： `![主界面](./assets/screenshots/main.png)`。
-
-如果你愿意，我可以帮你把图片上传到仓库（你需要把图片文件拖给我或提供可访问的图片 URL）。
-
 ## 贡献
 - 提交 Issue 报告 Bug 或提需求。
 - 提交 PR 时针对默认分支，保持变更小而专注，并在 PR 描述中说明变更点。
@@ -122,7 +101,4 @@ npm run mobile:open:ios
 
 ---
 
-如果你同意，我已经把以上 README 更新到仓库（翻译为中文并加入说明与占位截图）。
-下一步我可以：
-- 将你提供的真实截图上传到 `assets/screenshots/` 并把 README 中的占位图替换为仓库内图片；
-- 或根据你的要求进一步调整文案（例如更详尽的环境变量、打包注意事项或示例数据）。
+如果你需要我之后把真实截图加入仓库或进一步调整文案，我可以随时帮你操作。
