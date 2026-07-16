@@ -1,107 +1,128 @@
 # 黑马记账 (heima-accounting)
 
-A lightweight personal accounting app — desktop (Electron) first, with a mobile build path (Capacitor). Designed for easy local bookkeeping and simple statistics.
+一个轻量的个人记账应用 — 以桌面（Electron）为主，同时提供移动端（Capacitor）构建路径。适合本地保存账目、查看账单与统计。
 
-## What this is
-A cross-platform personal bookkeeping application implemented as an Electron + React desktop app with an option to build a mobile shell via Capacitor. It stores data locally (sql.js) and provides pages for adding records, viewing lists, statistics, and settings.
+## 简介
+黑马记账是一个跨平台的个人记账应用，桌面端基于 Electron + React 实现，数据保存在本地（使用 sql.js）。应用包含记账、账单列表、统计与设置等页面，支持通过 Capacitor 打包为移动应用壳。
 
-### Stack
-- **Language(s):** TypeScript, JavaScript
-- **Framework / runtime:** Electron (desktop) + React (renderer) + Vite (dev/build). Capacitor for mobile builds.
-- **Notable libraries:** Ant Design (UI), sql.js (SQLite-in-browser), ECharts (charts), Zustand (state), React Router
+### 技术栈
+- **语言：** TypeScript、JavaScript
+- **运行环境 / 框架：** Electron（桌面） + React（渲染层） + Vite（构建）；Capacitor（移动端）
+- **主要依赖：** Ant Design（UI）、sql.js（SQLite 在浏览器中）、ECharts（图表）、Zustand（状态管理）、React Router
 
-## How it's organized
-Top-level important files and directories:
+## 目录结构（重要项）
 ```
-package.json                # scripts & deps (dev/build/dist/mobile scripts)
-electron.vite.config.ts     # electron + vite config
-electron-builder.yml       # packaging config
-vite.mobile.config.ts      # mobile build config
-capacitor.config.ts        # Capacitor config (mobile)
-android/                   # Android project for Capacitor
+package.json                # 脚本与依赖（包括 dev/build/dist/mobile）
+electron.vite.config.ts     # electron + vite 配置
+electron-builder.yml       # 打包配置
+vite.mobile.config.ts      # 移动端构建配置
+capacitor.config.ts        # Capacitor 配置（移动）
+android/                   # Capacitor 的 Android 原生项目
 src/
-  main/                    # Electron main process (app lifecycle, database)
+  main/                    # Electron 主进程（应用生命周期、数据库）
     index.ts
-    database.ts            # sql.js-based DB logic and migrations
-  preload/                 # Preload script exposing safe APIs to renderer
+    database.ts            # 基于 sql.js 的 DB 逻辑与迁移代码
+  preload/                 # Preload 脚本，安全地将 API 暴露给渲染进程
     index.ts
-  renderer/                # React app (UI)
+  renderer/                # React 前端
     App.tsx
-    pages/                 # AddRecord, RecordList, Statistics, Settings pages
-    store/                 # zustand stores (useStore)
-    components/            # shared components like ErrorBoundary
-  shared/                  # shared types (src/shared/types.ts)
-build-portable.sh          # helper script to build portable releases
+    pages/                 # AddRecord、RecordList、Statistics、Settings 等页面
+    store/                 # zustand 状态（useStore）
+    components/            # 共享组件（例如 ErrorBoundary）
+  shared/                  # 共享类型定义（src/shared/types.ts）
+build-portable.sh          # 打包为便携版的脚本
 ```
 
-How it fits together:
-- The Electron main process (src/main) boots the app, initializes a local sql.js database (src/main/database.ts), and registers IPC or context-bridge handlers.
-- The preload script (src/preload/index.ts) exposes a minimal, secure API to the renderer.
-- The renderer (src/renderer) is a React SPA (Vite) using Ant Design for UI, zustand for state, and ECharts for charts. Pages communicate with main via the preload API.
+运行时说明：
+- Electron 主进程（src/main）启动应用、初始化本地 sql.js 数据库（src/main/database.ts），并通过 IPC 或 contextBridge 暴露接口给渲染层。
+- preload（src/preload/index.ts）导出最小化且安全的访问主进程能力给 renderer。
+- 渲染层（src/renderer）为 React SPA，使用 Ant Design 做界面，Zustand 管理状态，ECharts 绘制统计图。
 
-## How to run it
+## 快速开始（从克隆到运行）
+前置项：Node.js（建议 18+）、npm。移动端构建需 Android Studio / Xcode 等原生构建环境。
 
-Prerequisites:
-- Node.js (recommended 18+)
-- npm (or compatible package manager)
-- For mobile builds: Capacitor prerequisites (Android Studio / Xcode for respective platforms)
-
-Install dependencies:
+安装依赖：
 ```bash
 npm ci
-# or
+# 或
 npm install
 ```
 
-Run desktop in development (hot-reload):
+开发环境（热重载）：
 ```bash
 npm run dev
 ```
 
-Build desktop (production) and package:
+构建与打包（桌面）：
 ```bash
-# build renderer & main artifacts
+# 编译 renderer & main
 npm run build
 
-# package into directory
+# 将构建产物打包到目录（测试用）
 npm run pack
 
-# build and create distributable installers
+# 生成安装包（依赖 electron-builder 的本地签名/配置）
 npm run dist
 ```
 
-Preview a production build locally:
+本地预览生产构建：
 ```bash
 npm run preview
 ```
 
-Mobile (Capacitor) flow (generate a mobile web build, then sync with native projects):
+移动端（Capacitor）流程：
 ```bash
-# produce mobile web build
+# 构建移动端 web 资源
 npm run mobile:build
 
-# sync web assets into Capacitor native projects
+# 同步到 Capacitor 原生项目
 npm run mobile:sync
 
-# add platforms (one-time)
+# 添加平台（一次性）
 npm run mobile:add:android
 npm run mobile:add:ios
 
-# open android studio / Xcode
+# 打开原生 IDE
 npm run mobile:open:android
 npm run mobile:open:ios
 ```
 
-Notes:
-- The repository uses sql.js for local storage and stores DB logic in src/main/database.ts.
-- Building installers requires the native tooling and signing configuration per electron-builder settings (see electron-builder.yml).
+注意：打包安装器需要在 electron-builder.yml 中配置签名与目标平台相关设置。
 
-## Contributing
-- Open issues for bugs or feature requests.
-- Submit PRs against the default branch; keep changes focused and include a short description.
-- If you change DB schema or migrations, update src/main/database.ts accordingly.
+## 截图（示例）
+下面是占位截图，建议你替换为真实截图：
 
-## Try asking
-- Where is the persistence and migration logic implemented? (see src/main/database.ts)
-- How does the renderer call native APIs — where is the context bridge defined? (see src/preload/index.ts)
-- Which UI pages implement export/import or backup of the database, and are these wired for mobile builds?
+- 主界面（记账页）
+
+![主界面 - 记账页](https://via.placeholder.com/900x520.png?text=%E4%B8%BB%E7%95%8C%E9%A1%B5+%E8%AE%B0%E8%B4%A6)
+
+- 账单列表
+
+![账单列表](https://via.placeholder.com/900x520.png?text=%E8%B4%A6%E5%8D%95%E5%88%97%E8%A1%A8)
+
+- 统计页面（图表）
+
+![统计页面](https://via.placeholder.com/900x520.png?text=%E7%BB%9F%E8%AE%A1%E9%A1%B5)
+
+如何替换为真实截图：
+1. 在仓库中创建目录 `assets/screenshots/` 并上传图片，例如 `assets/screenshots/main.png`。
+2. 将上面图片链接替换为相对路径： `![主界面](./assets/screenshots/main.png)`。
+
+如果你愿意，我可以帮你把图片上传到仓库（你需要把图片文件拖给我或提供可访问的图片 URL）。
+
+## 贡献
+- 提交 Issue 报告 Bug 或提需求。
+- 提交 PR 时针对默认分支，保持变更小而专注，并在 PR 描述中说明变更点。
+- 若修改数据库结构或迁移，请更新 `src/main/database.ts` 中的迁移逻辑。
+
+## 常见问题 / 代码指南
+- 持久化：所有业务数据保存在本地 sqlite（sql.js），数据库初始化与迁移在 `src/main/database.ts`。
+- 渲染层与主进程通信：在 `src/preload/index.ts` 中定义了 context bridge，渲染层通过该桥接调用主进程功能。
+- 页面入口：`src/renderer/App.tsx` 管理四个主页面（记账、账单、统计、设置）。
+
+---
+
+如果你同意，我已经把以上 README 更新到仓库（翻译为中文并加入说明与占位截图）。
+下一步我可以：
+- 将你提供的真实截图上传到 `assets/screenshots/` 并把 README 中的占位图替换为仓库内图片；
+- 或根据你的要求进一步调整文案（例如更详尽的环境变量、打包注意事项或示例数据）。
